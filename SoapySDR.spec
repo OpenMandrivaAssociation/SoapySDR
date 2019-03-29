@@ -50,7 +50,7 @@ sed -i 's!head-ref!HEAD!g' cmake/Modules/GetGitRevisionDescription.cmake.in
 %build
 export Python_ADDITIONAL_VERSIONS="%{python3_version}"
 %cmake -DUSE_PYTHON_CONFIG=ON -DPYTHON3_EXECUTABLE=%{__python3} -DBUILD_PYTHON3=ON
-%make_build
+%make_build LIBS="-pthread"
 
 %install
 %make_install
