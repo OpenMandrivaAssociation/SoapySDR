@@ -1,6 +1,6 @@
 %define _disable_lto %nil
 Name:           SoapySDR
-Version:        0.7.1
+Version:        0.7.2
 Release:        1
 Summary:        A Vendor Neutral and Platform Independent SDR Support Library
 
@@ -18,11 +18,11 @@ BuildRequires:	python-numpy
 SoapySDR is an open-source generalized C/C++ API and runtime library
 for interfacing with Software-Defined Radio (SDR) devices.
 
-%package -n python3-%{name}
-Summary:        Python3 Bindings for SoapySDR
-%{?python_provide:%python_provide python3-%{name}}
+%package -n python-%{name}
+Summary:        Python Bindings for SoapySDR
+%{?python_provide:%python_provide python-%{name}}
 
-%description -n python3-%{name}
+%description -n python-%{name}
 SoapySDR is an open-source generalized C/C++ API and runtime library
 for interfacing with Software-Defined Radio (SDR) devices.
 
@@ -34,49 +34,40 @@ Requires:       %{name}%{?_isa} = %{version}-%{release}
 SoapySDR is an open-source generalized C/C++ API and runtime library
 for interfacing with Software-Defined Radio (SDR) devices.
 
-%package -n %{name}-doc
-Summary:        Development Files for SoapySDR
-BuildArch: noarch
-
-%description -n %{name}-doc
-SoapySDR is an open-source generalized C/C++ API and runtime library
-for interfacing with Software-Defined Radio (SDR) devices. This package includes
-library header file documentation.
-    
 %prep
 %autosetup -p1 -n %{name}-soapy-sdr-%{version}
 sed -i 's!head-ref!HEAD!g' cmake/Modules/GetGitRevisionDescription.cmake.in
 
 %build
-export Python_ADDITIONAL_VERSIONS="%{python3_version}"
-%cmake -DUSE_PYTHON_CONFIG=ON -DPYTHON3_EXECUTABLE=%{__python3} -DBUILD_PYTHON3=ON
+export Python_ADDITIONAL_VERSIONS="%{python_version}"
+export CFLAGS="%{optflags} -pthread"
+export CXXFLAGS="%{optflags} -pthread"
+%cmake -DUSE_PYTHON_CONFIG=ON -DPYTHON3_EXECUTABLE=%{__python} -DBUILD_PYTHON3=ON
 %make_build LIBS="-pthread"
 
 %install
-%make_install
+%make_install -C build
 mkdir -p $RPM_BUILD_ROOT/%{_libdir}/%{name}/modules0.7
 
 %check
 ctest -V %{?_smp_mflags}
 
-%ldconfig_scriptlets
 %files
 %license LICENSE_1_0.txt
 %{_bindir}/SoapySDRUtil
-%{_libdir}/libSoapySDR.so.0.7.0
-%{_libdir}/libSoapySDR.so.0.7
+%{_libdir}/libSoapySDR.so.0.7*
 %{_mandir}/man1/*
 %doc README.md
 # for hardware support modules
 %dir %{_libdir}/%{name}
 %dir %{_libdir}/%{name}/modules0.7
 
-%files -n python3-%{name}
+%files -n python-%{name}
 %license LICENSE_1_0.txt
-%{python3_sitearch}/SoapySDR.py
-%{python3_sitearch}/_SoapySDR.so
-%{python3_sitearch}/__pycache__/SoapySDR.cpython-*.opt-1.pyc
-%{python3_sitearch}/__pycache__/SoapySDR.cpython-*.pyc
+%{python_sitearch}/SoapySDR.py
+%{python_sitearch}/_SoapySDR.so
+%{python_sitearch}/__pycache__/SoapySDR.cpython-*.opt-1.pyc
+%{python_sitearch}/__pycache__/SoapySDR.cpython-*.pyc
 
 %files -n %{name}-devel
 %{_includedir}/%{name}
@@ -84,7 +75,3 @@ ctest -V %{?_smp_mflags}
 %{_libdir}/pkgconfig/*
 %dir %{_datadir}/cmake/%{name}
 %{_datadir}/cmake/%{name}/*
-
-%files -n %{name}-doc
-%license LICENSE_1_0.txt
-%doc docs/html/*
