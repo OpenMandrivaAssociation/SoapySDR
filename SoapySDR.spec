@@ -1,4 +1,8 @@
 %define _disable_lto %nil
+%define major 0.7
+%define libname %mklibname %{name} %{major}
+%define devname %mklibname -d %{name}
+
 Name:           SoapySDR
 Version:        0.7.2
 Release:        1
@@ -26,11 +30,19 @@ Summary:        Python Bindings for SoapySDR
 SoapySDR is an open-source generalized C/C++ API and runtime library
 for interfacing with Software-Defined Radio (SDR) devices.
 
-%package -n %{name}-devel
+%package -n %{libname}
 Summary:        Development Files for SoapySDR
-Requires:       %{name}%{?_isa} = %{version}-%{release}
+Requires:       %{name} = %{EVRD}
 
-%description -n %{name}-devel
+%description -n %{libname}
+SoapySDR is an open-source generalized C/C++ API and runtime library
+for interfacing with Software-Defined Radio (SDR) devices.
+
+%package -n %{devname}
+Summary:        Development Files for SoapySDR
+Requires:       %{libname} = %{EVRD}
+
+%description -n %{devname}
 SoapySDR is an open-source generalized C/C++ API and runtime library
 for interfacing with Software-Defined Radio (SDR) devices.
 
@@ -55,12 +67,14 @@ ctest -V %{?_smp_mflags}
 %files
 %license LICENSE_1_0.txt
 %{_bindir}/SoapySDRUtil
-%{_libdir}/libSoapySDR.so.0.7*
 %{_mandir}/man1/*
 %doc README.md
 # for hardware support modules
 %dir %{_libdir}/%{name}
 %dir %{_libdir}/%{name}/modules0.7
+
+%files -n %{libname}
+%{_libdir}/libSoapySDR.so.%{major}*
 
 %files -n python-%{name}
 %license LICENSE_1_0.txt
@@ -69,7 +83,7 @@ ctest -V %{?_smp_mflags}
 %{python_sitearch}/__pycache__/SoapySDR.cpython-*.opt-1.pyc
 %{python_sitearch}/__pycache__/SoapySDR.cpython-*.pyc
 
-%files -n %{name}-devel
+%files -n %{devname}
 %{_includedir}/%{name}
 %{_libdir}/libSoapySDR.so
 %{_libdir}/pkgconfig/*
