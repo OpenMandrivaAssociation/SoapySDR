@@ -1,11 +1,11 @@
 %define _disable_lto %nil
-%define major 0.7
+%define major 0.8
 %define libname %mklibname %{name} %{major}
 %define devname %mklibname -d %{name}
 
 Name:           SoapySDR
-Version:        0.7.2
-Release:        2
+Version:	0.8.1
+Release:	1
 Summary:        A Vendor Neutral and Platform Independent SDR Support Library
 
 License:        Boost
