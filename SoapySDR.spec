@@ -3,20 +3,21 @@
 %define libname %mklibname %{name} %{major}
 %define devname %mklibname -d %{name}
 
-Name:           SoapySDR
+Name:		SoapySDR
 Version:	0.8.1
-Release:	3
-Summary:        A Vendor Neutral and Platform Independent SDR Support Library
-
-License:        Boost
-URL:            https://github.com/pothosware/%{name}
+Release:	4
+Summary:	A Vendor Neutral and Platform Independent SDR Support Library
+License:	Boost
+URL:		https://github.com/pothosware/SoapySDR
 Source0:	https://github.com/pothosware/SoapySDR/archive/soapy-sdr-%{version}.tar.gz
 
-BuildRequires:  cmake
-BuildRequires:  swig
-BuildRequires:  doxygen
-BuildRequires:	python-devel
-BuildRequires:	python-numpy
+BuildRequires:	cmake
+BuildRequires:	ninja
+BuildRequires:	swig
+BuildRequires:	doxygen
+BuildRequires:	python
+BuildRequires:	pkgconfig(python3)
+BuildRequires:	python%{pyver}dist(numpy)
 
 %description
 SoapySDR is an open-source generalized C/C++ API and runtime library
@@ -54,15 +55,19 @@ sed -i 's!head-ref!HEAD!g' cmake/Modules/GetGitRevisionDescription.cmake.in
 export Python_ADDITIONAL_VERSIONS="%{python_version}"
 export CFLAGS="%{optflags} -pthread"
 export CXXFLAGS="%{optflags} -pthread"
-%cmake -DUSE_PYTHON_CONFIG=ON -DPYTHON3_EXECUTABLE=%{__python} -DBUILD_PYTHON3=ON
-%make_build LIBS="-pthread"
+%cmake \
+	-DSOAPY_SDR_VERSION=%{version}-%{release} \
+	-DPYTHON3_EXECUTABLE=%{__python} \
+	-DBUILD_PYTHON3=ON \
+	-G Ninja
+%ninja_build
 
 %install
-%make_install -C build
-mkdir -p $RPM_BUILD_ROOT/%{_libdir}/%{name}/modules0.7
+%ninja_install -C build
+mkdir -p %{buildroot}/%{_libdir}/%{name}/modules0.7
 
 %check
-ctest -V %{?_smp_mflags}
+%ninja_test -C build
 
 %files
 %license LICENSE_1_0.txt
@@ -80,8 +85,6 @@ ctest -V %{?_smp_mflags}
 %license LICENSE_1_0.txt
 %{python_sitearch}/SoapySDR.py
 %{python_sitearch}/_SoapySDR.so
-%{python_sitearch}/__pycache__/SoapySDR.cpython-*.opt-1.pyc
-%{python_sitearch}/__pycache__/SoapySDR.cpython-*.pyc
 
 %files -n %{devname}
 %{_includedir}/%{name}
