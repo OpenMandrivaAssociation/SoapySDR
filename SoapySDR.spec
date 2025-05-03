@@ -2,6 +2,7 @@
 %define major 0.8
 %define libname %mklibname %{name} %{major}
 %define devname %mklibname -d %{name}
+%bcond_without tests
 
 Name:		SoapySDR
 Version:	0.8.1
@@ -66,8 +67,11 @@ export CXXFLAGS="%{optflags} -pthread"
 %ninja_install -C build
 mkdir -p %{buildroot}/%{_libdir}/%{name}/modules0.7
 
+%if %{with tests}
 %check
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:%{buildroot}%{_libdir}
 %ninja_test -C build
+%endif
 
 %files
 %license LICENSE_1_0.txt
@@ -89,6 +93,6 @@ mkdir -p %{buildroot}/%{_libdir}/%{name}/modules0.7
 %files -n %{devname}
 %{_includedir}/%{name}
 %{_libdir}/libSoapySDR.so
-%{_libdir}/pkgconfig/*
+%{_libdir}/pkgconfig/%{name}.pc
 %dir %{_datadir}/cmake/%{name}
 %{_datadir}/cmake/%{name}/*
