@@ -6,7 +6,7 @@
 
 Name:		SoapySDR
 Version:	0.8.1
-Release:	4
+Release:	5
 Summary:	A Vendor Neutral and Platform Independent SDR Support Library
 License:	Boost
 URL:		https://github.com/pothosware/SoapySDR
